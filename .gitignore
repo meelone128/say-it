@@ -1,0 +1,18 @@
+node_modules/
+.expo/
+.expo-check/
+dist/
+coverage/
+.DS_Store
+.env
+.env.*
+!.env.example
+evaluation/results/
+*.log
+
+# Local Expo preview checks and generated QR codes
+android-*-check.js
+android-bundle*.js
+expo-check.html
+expo-go-qr.png
+expo-go-qr.svg

@@ -1,0 +1,212 @@
+[
+  {
+    "id": "daily-001",
+    "category": "日常生活",
+    "chinese": "我今天第一次去健身房，刚开始有点紧张，不过几分钟后我就放松下来了。",
+    "must_preserve": ["第一次去健身房", "开始时紧张", "几分钟后放松"],
+    "challenge": "自然叙事与合理拆句"
+  },
+  {
+    "id": "daily-002",
+    "category": "日常生活",
+    "chinese": "我刚才差点迟到，还好最后赶上了地铁。",
+    "must_preserve": ["差点迟到", "最终赶上地铁"],
+    "challenge": "差点与还好的自然表达"
+  },
+  {
+    "id": "daily-003",
+    "category": "日常生活",
+    "chinese": "这家店的味道还可以，就是价格有点贵。",
+    "must_preserve": ["味道尚可", "价格偏贵"],
+    "challenge": "委婉评价"
+  },
+  {
+    "id": "daily-004",
+    "category": "日常生活",
+    "chinese": "外面好像要下雨了，你出门的时候记得带把伞。",
+    "must_preserve": ["可能下雨", "提醒带伞"],
+    "challenge": "推测与提醒"
+  },
+  {
+    "id": "daily-005",
+    "category": "日常生活",
+    "chinese": "我本来想自己做饭，但是下班太晚了，所以最后点了外卖。",
+    "must_preserve": ["原计划做饭", "下班晚", "最后点外卖"],
+    "challenge": "转折与因果"
+  },
+  {
+    "id": "request-001",
+    "category": "请求与建议",
+    "chinese": "你到家以后跟我说一声，不然我会担心。",
+    "must_preserve": ["到家后告知", "否则会担心"],
+    "challenge": "自然请求而非命令"
+  },
+  {
+    "id": "request-002",
+    "category": "请求与建议",
+    "chinese": "如果你明天下午有空的话，我们可以一起喝杯咖啡。",
+    "must_preserve": ["明天下午", "有空的条件", "一起喝咖啡"],
+    "challenge": "轻松邀请"
+  },
+  {
+    "id": "request-003",
+    "category": "请求与建议",
+    "chinese": "这个声音有点大，你能不能稍微调小一点？",
+    "must_preserve": ["声音太大", "请求调小"],
+    "challenge": "礼貌程度"
+  },
+  {
+    "id": "request-004",
+    "category": "请求与建议",
+    "chinese": "我建议我们先把最重要的事情做完，其他的明天再处理。",
+    "must_preserve": ["先做重要事项", "其他事项明天处理"],
+    "challenge": "建议语气"
+  },
+  {
+    "id": "request-005",
+    "category": "请求与建议",
+    "chinese": "你方便的时候能帮我看一下这份文件吗？不用特别着急。",
+    "must_preserve": ["请求看文件", "不着急"],
+    "challenge": "降低请求压力"
+  },
+  {
+    "id": "emotion-001",
+    "category": "情绪与态度",
+    "chinese": "其实我不太想去，但又觉得直接拒绝不太好意思。",
+    "must_preserve": ["不想去", "不好意思拒绝"],
+    "challenge": "含蓄和矛盾心理"
+  },
+  {
+    "id": "emotion-002",
+    "category": "情绪与态度",
+    "chinese": "我不是生气，我只是有点失望，因为我以为你会提前告诉我。",
+    "must_preserve": ["不是生气", "有点失望", "预期提前告知"],
+    "challenge": "否定不能反转"
+  },
+  {
+    "id": "emotion-003",
+    "category": "情绪与态度",
+    "chinese": "这件事虽然挺麻烦的，但也没有我一开始想象得那么糟。",
+    "must_preserve": ["事情麻烦", "没有预想那么糟"],
+    "challenge": "让步关系"
+  },
+  {
+    "id": "emotion-004",
+    "category": "情绪与态度",
+    "chinese": "听到这个消息我真的很替你高兴，你之前的努力总算没有白费。",
+    "must_preserve": ["为对方高兴", "努力得到回报"],
+    "challenge": "自然祝贺"
+  },
+  {
+    "id": "emotion-005",
+    "category": "情绪与态度",
+    "chinese": "我最近状态不太好，可能需要给自己一点时间调整一下。",
+    "must_preserve": ["最近状态不好", "需要时间调整"],
+    "challenge": "克制的情绪表达"
+  },
+  {
+    "id": "work-001",
+    "category": "工作学习",
+    "chinese": "这个项目比我们预想的复杂，可能需要多两天才能完成。",
+    "must_preserve": ["项目更复杂", "可能多需要两天"],
+    "challenge": "工期不确定性"
+  },
+  {
+    "id": "work-002",
+    "category": "工作学习",
+    "chinese": "我已经把报告的第一版发给你了，有问题的话我们下午开会再讨论。",
+    "must_preserve": ["已发送第一版", "下午会议讨论问题"],
+    "challenge": "工作沟通"
+  },
+  {
+    "id": "work-003",
+    "category": "工作学习",
+    "chinese": "我对这个领域还不太熟悉，所以可能会问一些比较基础的问题。",
+    "must_preserve": ["不熟悉领域", "可能问基础问题"],
+    "challenge": "谦逊表达"
+  },
+  {
+    "id": "work-004",
+    "category": "工作学习",
+    "chinese": "我们目前最大的困难不是技术，而是时间和人手都不够。",
+    "must_preserve": ["困难不是技术", "时间不足", "人手不足"],
+    "challenge": "否定与对比"
+  },
+  {
+    "id": "work-005",
+    "category": "工作学习",
+    "chinese": "这部分我大概明白了，但还需要自己实际做一遍才能确定。",
+    "must_preserve": ["大概明白", "需要实践确认"],
+    "challenge": "不完全确定"
+  },
+  {
+    "id": "number-001",
+    "category": "数字时间与实体",
+    "chinese": "我们约在周三下午三点半，地点还是上次那家咖啡店。",
+    "must_preserve": ["周三", "下午三点半", "上次的咖啡店"],
+    "challenge": "时间和地点"
+  },
+  {
+    "id": "number-002",
+    "category": "数字时间与实体",
+    "chinese": "这件衣服原价八百九十九，现在打七折，我还是觉得有点贵。",
+    "must_preserve": ["原价899", "七折", "仍觉得贵"],
+    "challenge": "价格和折扣"
+  },
+  {
+    "id": "number-003",
+    "category": "数字时间与实体",
+    "chinese": "从我家到公司大概十二公里，开车不堵的话需要二十分钟。",
+    "must_preserve": ["约12公里", "不堵车约20分钟"],
+    "challenge": "距离和条件"
+  },
+  {
+    "id": "number-004",
+    "category": "数字时间与实体",
+    "chinese": "张伟说明天上午九点之前会把最终版本发过来。",
+    "must_preserve": ["张伟", "明天上午9点前", "最终版本"],
+    "challenge": "中文人名与截止时间"
+  },
+  {
+    "id": "number-005",
+    "category": "数字时间与实体",
+    "chinese": "我们一共有六个人，其中两个人吃素，所以点菜的时候要注意一下。",
+    "must_preserve": ["共6人", "2人吃素", "点菜需注意"],
+    "challenge": "数量关系"
+  },
+  {
+    "id": "spoken-001",
+    "category": "口语与停顿",
+    "chinese": "嗯，我还没完全想好，不过我现在比较倾向于先试一试。",
+    "must_preserve": ["没有完全决定", "倾向先尝试"],
+    "challenge": "填充词与犹豫语气"
+  },
+  {
+    "id": "spoken-002",
+    "category": "口语与停顿",
+    "chinese": "怎么说呢，这个方案不能说不好，就是感觉还差点意思。",
+    "must_preserve": ["方案并非不好", "仍不够满意"],
+    "challenge": "高度口语化委婉评价"
+  },
+  {
+    "id": "spoken-003",
+    "category": "口语与停顿",
+    "chinese": "反正事情已经发生了，我们现在纠结也没什么用，还是想想接下来怎么办吧。",
+    "must_preserve": ["事情已发生", "纠结无用", "应考虑下一步"],
+    "challenge": "口语逻辑衔接"
+  },
+  {
+    "id": "spoken-004",
+    "category": "口语与停顿",
+    "chinese": "我当时一下子没反应过来，过了几秒才明白他是什么意思。",
+    "must_preserve": ["开始没反应过来", "几秒后理解"],
+    "challenge": "自然叙述反应过程"
+  },
+  {
+    "id": "spoken-005",
+    "category": "口语与停顿",
+    "chinese": "也不是说一定要今天做完，如果来不及的话，明天上午完成也可以。",
+    "must_preserve": ["不要求今天一定完成", "来不及可明早完成"],
+    "challenge": "否定和条件不能丢失"
+  }
+]

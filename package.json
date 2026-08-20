@@ -1,0 +1,33 @@
+{
+  "name": "spoken-english-coach",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:mobile": "npm run start --workspace @spoken-english/mobile",
+    "dev:api": "npm run start:dev --workspace @spoken-english/api",
+    "build:api": "npm run build --workspace @spoken-english/api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspace @spoken-english/api -- --runInBand",
+    "eval:text:one": "node --env-file=.env.local evaluation/scripts/run-text-eval.mjs --limit=1",
+    "eval:text:all": "node --env-file=.env.local evaluation/scripts/run-text-eval.mjs --all",
+    "eval:asr": "node --env-file=.env.local evaluation/scripts/run-asr-eval.mjs",
+    "eval:tts": "node --env-file=.env.local evaluation/scripts/run-tts-eval.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "expo": "54.0.37"
+  },
+  "overrides": {
+    "expo": "54.0.37",
+    "expo-asset": "12.0.13",
+    "expo-constants": "18.0.14",
+    "expo-file-system": "19.0.24"
+  }
+}
