@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: spoken-english-coach-api
+    runtime: node
+    region: singapore
+    plan: free
+    buildCommand: npm ci && npm run build:api
+    startCommand: npm run start:prod --workspace @spoken-english/api
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DASHSCOPE_API_KEY
+        sync: false
