@@ -9,6 +9,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://spoken-english-coach-api.onrender.com/api/v1"
+      },
       "android": {
         "buildType": "apk"
       }

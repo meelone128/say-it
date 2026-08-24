@@ -2,7 +2,7 @@
   "expo": {
     "name": "英语口语练习助手",
     "slug": "spoken-english-coach",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "spokenenglish",
@@ -19,10 +19,12 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "permissions": [
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "predictiveBackGestureEnabled": false,
-      "package": "com.spokenenglish.coach"
+      "package": "com.spokenenglish.coach",
+      "versionCode": 2
     },
     "web": {
       "output": "static",
@@ -50,6 +52,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "cb8e3abf-848d-4aa8-aa80-377c9c78c8db"
+      }
+    },
+    "owner": "meelone128"
   }
 }
