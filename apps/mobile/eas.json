@@ -10,7 +10,9 @@
     "preview": {
       "distribution": "internal",
       "env": {
-        "EXPO_PUBLIC_API_BASE_URL": "https://spoken-english-coach-api.onrender.com/api/v1"
+        "EXPO_PUBLIC_API_BASE_URL": "https://spoken-english-coach-api.onrender.com/api/v1",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://omyxcicsksokoxvhjkme.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_WN0kzbZOKdo4MivAgmJbJQ_8ugIQJX7"
       },
       "android": {
         "buildType": "apk"

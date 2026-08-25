@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "英语口语练习助手",
+    "name": "Say It",
     "slug": "spoken-english-coach",
-    "version": "1.0.1",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "spokenenglish",
@@ -13,10 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#E9E0FF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
@@ -24,7 +22,7 @@
       ],
       "predictiveBackGestureEnabled": false,
       "package": "com.spokenenglish.coach",
-      "versionCode": 2
+      "versionCode": 5
     },
     "web": {
       "output": "static",

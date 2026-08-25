@@ -90,6 +90,22 @@ export class SpeechService {
     if (!audioUrl) {
       throw new BadGatewayException('英语发音结果为空，请重新生成');
     }
+    return makeAudioUrlSecure(audioUrl);
+  }
+}
+
+/**
+ * DashScope may return a temporary OSS file URL using HTTP. Android blocks
+ * clear-text downloads, while this OSS endpoint also supports HTTPS.
+ */
+function makeAudioUrlSecure(audioUrl: string): string {
+  try {
+    const url = new URL(audioUrl);
+    if (url.protocol === 'http:' && url.hostname.endsWith('.aliyuncs.com')) {
+      url.protocol = 'https:';
+    }
+    return url.toString();
+  } catch {
     return audioUrl;
   }
 }

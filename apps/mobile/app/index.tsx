@@ -568,7 +568,12 @@ function RecordPage({
         <Text style={styles.brandText}>SAY IT</Text>
       </View>
 
-      <View style={styles.recordCenter}>
+      <View
+        style={[
+          styles.recordCenter,
+          phase === "preview" && styles.previewRecordCenter,
+        ]}
+      >
         {phase === "idle" ? (
           <>
             <Text style={styles.heroTitle}>把想说的话，</Text>
@@ -987,14 +992,6 @@ function EnglishPreview({
         >
           <Ionicons name="arrow-back" size={22} color={COLORS.ink} />
         </Pressable>
-        <View style={styles.previewHeadingCopy}>
-          <Text style={styles.previewTitle}>自然英语已生成</Text>
-          <Text style={styles.previewSubtitle}>
-            {audios.length
-              ? `${result.sentences.length} 句 · 发音已生成`
-              : `${result.sentences.length} 个跟读句子`}
-          </Text>
-        </View>
         {audios.length ? (
           <Pressable
             onPress={togglePlayAll}
@@ -1013,6 +1010,15 @@ function EnglishPreview({
             </Text>
           </Pressable>
         ) : null}
+      </View>
+
+      <View style={styles.previewHeadingCopy}>
+        <Text style={styles.previewTitle}>自然英语已生成</Text>
+        <Text style={styles.previewSubtitle}>
+          {audios.length
+            ? `${result.sentences.length} 句 · 发音已生成`
+            : `${result.sentences.length} 个跟读句子`}
+        </Text>
       </View>
 
       <ScrollView
@@ -2489,6 +2495,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     transform: [{ translateY: -82 }],
   },
+  previewRecordCenter: {
+    alignItems: "stretch",
+    justifyContent: "flex-start",
+    transform: [{ translateY: 0 }],
+  },
   heroTitle: {
     color: COLORS.ink,
     fontSize: 33,
@@ -2720,8 +2731,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 29,
   },
-  previewPanel: { width: "100%", height: "86%", paddingTop: 12 },
-  previewHeader: { flexDirection: "row", alignItems: "center" },
+  previewPanel: { width: "100%", flex: 1, paddingTop: 12 },
+  previewHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
   previewBack: {
     width: 44,
     height: 44,
@@ -2732,8 +2747,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.line,
   },
-  previewHeadingCopy: { flex: 1, marginLeft: 13 },
-  previewTitle: { color: COLORS.ink, fontSize: 22, fontWeight: "900" },
+  previewHeadingCopy: { marginTop: 16 },
+  previewTitle: { color: COLORS.ink, fontSize: 24, fontWeight: "900" },
   previewSubtitle: { marginTop: 3, color: COLORS.muted, fontSize: 13 },
   playAllButton: {
     height: 40,

@@ -33,6 +33,26 @@ describe('SpeechService', () => {
     expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 
+  it('upgrades DashScope audio links to HTTPS for Android downloads', async () => {
+    process.env.DASHSCOPE_API_KEY = 'test-key';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        output: {
+          audio: {
+            url: 'http://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/test.mp3',
+          },
+        },
+      }),
+    }) as jest.Mock;
+
+    const result = await new SpeechService().synthesize(['Hello.']);
+
+    expect(result.audios[0].audioUrl).toBe(
+      'https://dashscope-result-bj.oss-cn-beijing.aliyuncs.com/test.mp3',
+    );
+  });
+
   it('requires the server-side API key', async () => {
     delete process.env.DASHSCOPE_API_KEY;
     await expect(
