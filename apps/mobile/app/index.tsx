@@ -992,8 +992,29 @@ function EnglishPreview({
         >
           <Ionicons name="arrow-back" size={22} color={COLORS.ink} />
         </Pressable>
+        <Text style={styles.previewTitle}>自然英语已生成</Text>
+        <Pressable
+          accessibilityLabel={audios.length ? "保存学习单元" : "下一步，生成英语发音"}
+          onPress={audios.length ? onSave : onSynthesize}
+          style={({ pressed }) => [
+            styles.previewNextButton,
+            pressed && styles.pressed,
+          ]}
+        >
+          <Text style={styles.previewNextText}>下一步</Text>
+          <Ionicons name="arrow-forward" size={16} color="#FFFFFF" />
+        </Pressable>
+      </View>
+
+      <View style={styles.previewMetaRow}>
+        <Text style={styles.previewSubtitle}>
+          {audios.length
+            ? `${result.sentences.length} 句 · 发音已生成`
+            : `${result.sentences.length} 个跟读句子`}
+        </Text>
         {audios.length ? (
           <Pressable
+            accessibilityLabel="全部播放"
             onPress={togglePlayAll}
             style={({ pressed }) => [
               styles.playAllButton,
@@ -1002,23 +1023,14 @@ function EnglishPreview({
           >
             <Ionicons
               name={isPlayingAll && playerStatus.playing ? "pause" : "play"}
-              size={18}
+              size={16}
               color="#FFFFFF"
             />
             <Text style={styles.playAllText}>
-              {isPlayingAll && playerStatus.playing ? "暂停" : "全部播放"}
+              {isPlayingAll && playerStatus.playing ? "暂停" : "播放全部"}
             </Text>
           </Pressable>
         ) : null}
-      </View>
-
-      <View style={styles.previewHeadingCopy}>
-        <Text style={styles.previewTitle}>自然英语已生成</Text>
-        <Text style={styles.previewSubtitle}>
-          {audios.length
-            ? `${result.sentences.length} 句 · 发音已生成`
-            : `${result.sentences.length} 个跟读句子`}
-        </Text>
       </View>
 
       <ScrollView
@@ -1061,30 +1073,6 @@ function EnglishPreview({
         ))}
       </ScrollView>
 
-      <View style={styles.previewActions}>
-        <Pressable
-          onPress={onRegenerate}
-          style={({ pressed }) => [
-            styles.regenerateButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Ionicons name="refresh" size={20} color={COLORS.ink} />
-          <Text style={styles.regenerateButtonText}>重新生成</Text>
-        </Pressable>
-        <Pressable
-          onPress={audios.length ? onSave : onSynthesize}
-          style={({ pressed }) => [
-            styles.continueButton,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.continueButtonText}>
-            {audios.length ? "保存学习单元" : "生成发音"}
-          </Text>
-          <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -2735,7 +2723,7 @@ const styles = StyleSheet.create({
   previewHeader: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    gap: 12,
   },
   previewBack: {
     width: 44,
@@ -2747,9 +2735,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.line,
   },
-  previewHeadingCopy: { marginTop: 16 },
-  previewTitle: { color: COLORS.ink, fontSize: 24, fontWeight: "900" },
-  previewSubtitle: { marginTop: 3, color: COLORS.muted, fontSize: 13 },
+  previewTitle: { flex: 1, color: COLORS.ink, fontSize: 20, fontWeight: "900" },
+  previewNextButton: {
+    height: 44,
+    paddingHorizontal: 13,
+    borderRadius: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    backgroundColor: COLORS.ink,
+  },
+  previewNextText: { color: "#FFFFFF", fontSize: 13, fontWeight: "800" },
+  previewMetaRow: {
+    minHeight: 38,
+    marginTop: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  previewSubtitle: { color: COLORS.muted, fontSize: 13 },
   playAllButton: {
     height: 40,
     paddingHorizontal: 13,
@@ -2760,7 +2764,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.ink,
   },
   playAllText: { color: "#FFFFFF", fontSize: 12, fontWeight: "800" },
-  sentenceScroller: { flex: 1, marginTop: 18 },
+  sentenceScroller: { flex: 1, marginTop: 14 },
   sentenceList: { gap: 12, paddingBottom: 12 },
   sentenceCard: {
     paddingHorizontal: 18,
@@ -2803,7 +2807,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 21,
   },
-  previewActions: { flexDirection: "row", gap: 12, paddingTop: 12 },
   regenerateButton: {
     flex: 1,
     height: 54,
