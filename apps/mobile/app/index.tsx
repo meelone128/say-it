@@ -155,6 +155,11 @@ export default function HomeScreen() {
     setPage(Math.round(event.nativeEvent.contentOffset.x / width));
   };
 
+  const selectPage = (index: number) => {
+    setPage(index);
+    pagerRef.current?.scrollTo({ x: width * index, animated: true });
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <Animated.ScrollView
@@ -185,7 +190,12 @@ export default function HomeScreen() {
         </Page>
       </Animated.ScrollView>
 
-      <BottomNavigation page={page} scrollX={pageScrollX} pageWidth={width} />
+      <BottomNavigation
+        page={page}
+        scrollX={pageScrollX}
+        pageWidth={width}
+        onSelect={selectPage}
+      />
     </SafeAreaView>
   );
 }
@@ -194,10 +204,12 @@ function BottomNavigation({
   page,
   scrollX,
   pageWidth,
+  onSelect,
 }: {
   page: number;
   scrollX: Animated.Value;
   pageWidth: number;
+  onSelect: (index: number) => void;
 }) {
   const translateX = scrollX.interpolate({
     inputRange: [0, pageWidth, pageWidth * 2, pageWidth * 3],
@@ -205,22 +217,32 @@ function BottomNavigation({
     extrapolate: "clamp",
   });
   return (
-    <View style={styles.pageIndicator} pointerEvents="none">
+    <View style={styles.pageIndicator}>
       <View style={styles.indicatorTrack}>
         <Animated.View
+          pointerEvents="none"
           style={[
             styles.indicatorActiveBubble,
             { transform: [{ translateX }] },
           ]}
         />
         {PAGE_ICONS.map((icon, index) => (
-          <View key={icon} style={styles.indicatorItem}>
+          <Pressable
+            accessibilityLabel={["录音", "学习单元", "学习记录", "账号设置"][index]}
+            accessibilityRole="button"
+            key={icon}
+            onPress={() => onSelect(index)}
+            style={({ pressed }) => [
+              styles.indicatorItem,
+              pressed && styles.indicatorItemPressed,
+            ]}
+          >
             <Ionicons
               name={icon}
               size={20}
               color={page === index ? COLORS.ink : "#BBB7C3"}
             />
-          </View>
+          </Pressable>
         ))}
       </View>
     </View>
@@ -3588,5 +3610,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  indicatorItemPressed: { transform: [{ scale: 0.9 }] },
   pressed: { opacity: 0.72, transform: [{ scale: 0.985 }] },
 });
