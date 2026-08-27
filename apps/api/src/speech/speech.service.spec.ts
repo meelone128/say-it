@@ -33,6 +33,34 @@ describe('SpeechService', () => {
     expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 
+  it('generates a long unit in two batches or fewer', async () => {
+    process.env.DASHSCOPE_API_KEY = 'test-key';
+    let call = 0;
+    global.fetch = jest.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          call += 1;
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                json: async () => ({
+                  output: { audio: { url: `https://audio.test/${call}.mp3` } },
+                }),
+              }),
+            30,
+          );
+        }),
+    ) as jest.Mock;
+
+    const startedAt = Date.now();
+    await new SpeechService().synthesize(
+      Array.from({ length: 10 }, (_, index) => `Sentence ${index + 1}.`),
+    );
+
+    expect(Date.now() - startedAt).toBeLessThan(100);
+  });
+
   it('upgrades DashScope audio links to HTTPS for Android downloads', async () => {
     process.env.DASHSCOPE_API_KEY = 'test-key';
     global.fetch = jest.fn().mockResolvedValue({

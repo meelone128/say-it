@@ -31,7 +31,7 @@ export class SpeechService {
     const endpoint = process.env.DASHSCOPE_TTS_ENDPOINT || DEFAULT_ENDPOINT;
     const audios = await mapWithConcurrency(
       sentences,
-      3,
+      5,
       async (text, index) => ({
         sequence: index + 1,
         audioUrl: await this.synthesizeOne({
