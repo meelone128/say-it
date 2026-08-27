@@ -28,6 +28,7 @@ import {
   View,
 } from "react-native";
 import Reanimated, { LinearTransition } from "react-native-reanimated";
+import Storage from "expo-sqlite/kv-store";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -68,6 +69,7 @@ const PAGE_ICONS: (keyof typeof Ionicons.glyphMap)[] = [
   "person",
 ];
 const MAX_RECORDING_MILLIS = 60_000;
+const GUIDE_STORAGE_KEY = "say-it-guide-completed-v1";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.31.31:3000/api/v1";
 
@@ -109,6 +111,48 @@ interface DictionaryEntry {
   exampleChinese: string;
 }
 
+const GUIDE_STEPS: {
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
+  backgroundColor: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+}[] = [
+  {
+    icon: "mic",
+    color: COLORS.red,
+    backgroundColor: COLORS.redSoft,
+    eyebrow: "第一步",
+    title: "说一段中文",
+    description: "点击红色录音按钮，说出你真正想表达的话。每次最长 60 秒，也可以暂停和继续。",
+  },
+  {
+    icon: "sparkles",
+    color: COLORS.coral,
+    backgroundColor: COLORS.coralSoft,
+    eyebrow: "第二步",
+    title: "生成自然英语",
+    description: "确认中文内容后，Say It 会生成日常美式口语。点击右上角“下一步”，生成发音并保存学习单元。",
+  },
+  {
+    icon: "headset",
+    color: COLORS.green,
+    backgroundColor: COLORS.greenSoft,
+    eyebrow: "第三步",
+    title: "听一句，跟读一句",
+    description: "进入学习单元后，点击句子播放发音，点击单词查看解释。点击“检”进入检验模式。",
+  },
+  {
+    icon: "swap-horizontal",
+    color: "#B98519",
+    backgroundColor: "#F7E8B8",
+    eyebrow: "第四步",
+    title: "记录掌握状态",
+    description: "检验时左滑表示已掌握，右滑表示未掌握。底部四个图标既可以点击，也可以左右滑动切换页面。",
+  },
+];
+
 export default function HomeScreen() {
   const auth = useAuth();
   const { width } = useWindowDimensions();
@@ -116,6 +160,22 @@ export default function HomeScreen() {
   const pageScrollX = useRef(new Animated.Value(0)).current;
   const [page, setPage] = useState(0);
   const [units, setUnits] = useState<SavedLearningUnit[]>([]);
+  const [isGuideVisible, setIsGuideVisible] = useState(false);
+  const [guideStep, setGuideStep] = useState(0);
+
+  useEffect(() => {
+    let isActive = true;
+    void Storage.getItem(GUIDE_STORAGE_KEY)
+      .then((completed) => {
+        if (isActive && !completed) setIsGuideVisible(true);
+      })
+      .catch(() => {
+        if (isActive) setIsGuideVisible(true);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -160,6 +220,17 @@ export default function HomeScreen() {
     pagerRef.current?.scrollTo({ x: width * index, animated: true });
   };
 
+  const openGuide = () => {
+    setGuideStep(0);
+    setIsGuideVisible(true);
+  };
+
+  const finishGuide = () => {
+    setIsGuideVisible(false);
+    setGuideStep(0);
+    void Storage.setItem(GUIDE_STORAGE_KEY, "completed").catch(() => undefined);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <Animated.ScrollView
@@ -186,7 +257,7 @@ export default function HomeScreen() {
           <ProgressPage units={units} />
         </Page>
         <Page width={width} index={3} scrollX={pageScrollX}>
-          <AccountPage />
+          <AccountPage onOpenGuide={openGuide} />
         </Page>
       </Animated.ScrollView>
 
@@ -196,7 +267,122 @@ export default function HomeScreen() {
         pageWidth={width}
         onSelect={selectPage}
       />
+      <UserGuideModal
+        step={guideStep}
+        visible={isGuideVisible}
+        onBack={() => setGuideStep((current) => Math.max(0, current - 1))}
+        onClose={finishGuide}
+        onNext={() =>
+          guideStep === GUIDE_STEPS.length - 1
+            ? finishGuide()
+            : setGuideStep((current) => current + 1)
+        }
+      />
     </SafeAreaView>
+  );
+}
+
+function UserGuideModal({
+  visible,
+  step,
+  onBack,
+  onClose,
+  onNext,
+}: {
+  visible: boolean;
+  step: number;
+  onBack: () => void;
+  onClose: () => void;
+  onNext: () => void;
+}) {
+  const content = GUIDE_STEPS[step];
+  const isLast = step === GUIDE_STEPS.length - 1;
+
+  return (
+    <Modal
+      animationType="fade"
+      onRequestClose={onClose}
+      transparent
+      visible={visible}
+    >
+      <View style={styles.guideBackdrop}>
+        <View style={styles.guideCard}>
+          <View style={styles.guideTopRow}>
+            <View style={styles.guideBrandPill}>
+              <Text style={styles.guideBrandText}>SAY IT GUIDE</Text>
+            </View>
+            <Pressable
+              accessibilityLabel="关闭使用教程"
+              onPress={onClose}
+              style={({ pressed }) => [
+                styles.guideCloseButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Ionicons name="close" size={22} color={COLORS.ink} />
+            </Pressable>
+          </View>
+
+          <View
+            style={[
+              styles.guideIcon,
+              { backgroundColor: content.backgroundColor },
+            ]}
+          >
+            <Ionicons name={content.icon} size={42} color={content.color} />
+          </View>
+
+          <Text style={styles.guideEyebrow}>{content.eyebrow}</Text>
+          <Text style={styles.guideTitle}>{content.title}</Text>
+          <Text style={styles.guideDescription}>{content.description}</Text>
+
+          <View style={styles.guideDots}>
+            {GUIDE_STEPS.map((item, index) => (
+              <View
+                key={item.title}
+                style={[
+                  styles.guideDot,
+                  index === step && styles.guideDotActive,
+                ]}
+              />
+            ))}
+          </View>
+
+          <View style={styles.guideActions}>
+            <Pressable
+              onPress={step > 0 ? onBack : onClose}
+              style={({ pressed }) => [
+                styles.guideBackButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              {step > 0 ? (
+                <Ionicons name="arrow-back" size={18} color={COLORS.ink} />
+              ) : null}
+              <Text style={styles.guideBackText}>
+                {step > 0 ? "上一步" : "暂时跳过"}
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={onNext}
+              style={({ pressed }) => [
+                styles.guideNextButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.guideNextText}>
+                {isLast ? "开始使用" : "下一步"}
+              </Text>
+              <Ionicons
+                name={isLast ? "checkmark" : "arrow-forward"}
+                size={18}
+                color="#FFFFFF"
+              />
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -2138,7 +2324,7 @@ function RecordEmpty({
   );
 }
 
-function AccountPage() {
+function AccountPage({ onOpenGuide }: { onOpenGuide: () => void }) {
   const auth = useAuth();
   const [isAuthSheetVisible, setIsAuthSheetVisible] = useState(false);
   const [isAboutSheetVisible, setIsAboutSheetVisible] = useState(false);
@@ -2245,6 +2431,12 @@ function AccountPage() {
           icon="language-outline"
           title="英语偏好"
           value="美式日常口语"
+        />
+        <SettingRow
+          icon="help-circle-outline"
+          title="使用教程"
+          value="重新查看"
+          onPress={onOpenGuide}
         />
         <SettingRow
           icon="information-circle-outline"
@@ -3570,6 +3762,119 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   settingValue: { marginRight: 8, color: COLORS.muted, fontSize: 12 },
+  guideBackdrop: {
+    flex: 1,
+    paddingHorizontal: 22,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(24,23,25,0.46)",
+  },
+  guideCard: {
+    width: "100%",
+    maxWidth: 430,
+    padding: 24,
+    borderRadius: 32,
+    backgroundColor: COLORS.canvas,
+    shadowColor: "#181719",
+    shadowOpacity: 0.2,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 12,
+  },
+  guideTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  guideBrandPill: {
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: COLORS.coralSoft,
+  },
+  guideBrandText: {
+    color: COLORS.ink,
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 1.4,
+  },
+  guideCloseButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: COLORS.line,
+  },
+  guideIcon: {
+    width: 92,
+    height: 92,
+    marginTop: 30,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  guideEyebrow: {
+    marginTop: 26,
+    color: COLORS.coral,
+    fontSize: 12,
+    fontWeight: "900",
+    letterSpacing: 1.2,
+  },
+  guideTitle: {
+    marginTop: 8,
+    color: COLORS.ink,
+    fontSize: 29,
+    lineHeight: 37,
+    fontWeight: "900",
+  },
+  guideDescription: {
+    minHeight: 84,
+    marginTop: 12,
+    color: COLORS.muted,
+    fontSize: 15,
+    lineHeight: 24,
+  },
+  guideDots: {
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+  guideDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#D8D3E2",
+  },
+  guideDotActive: { width: 24, backgroundColor: COLORS.coral },
+  guideActions: { marginTop: 24, flexDirection: "row", gap: 11 },
+  guideBackButton: {
+    flex: 1,
+    height: 54,
+    borderRadius: 19,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: COLORS.line,
+  },
+  guideBackText: { color: COLORS.ink, fontSize: 14, fontWeight: "800" },
+  guideNextButton: {
+    flex: 1.35,
+    height: 54,
+    borderRadius: 19,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 7,
+    backgroundColor: COLORS.ink,
+  },
+  guideNextText: { color: "#FFFFFF", fontSize: 14, fontWeight: "800" },
   pageIndicator: {
     position: "absolute",
     bottom: 16,
