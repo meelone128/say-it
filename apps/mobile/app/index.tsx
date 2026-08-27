@@ -69,7 +69,7 @@ const PAGE_ICONS: (keyof typeof Ionicons.glyphMap)[] = [
   "person",
 ];
 const MAX_RECORDING_MILLIS = 60_000;
-const GUIDE_STORAGE_KEY = "say-it-guide-completed-v1";
+const GUIDE_STORAGE_KEY = "say-it-guide-completed-v2";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.31.31:3000/api/v1";
 
@@ -120,10 +120,26 @@ const GUIDE_STEPS: {
   description: string;
 }[] = [
   {
+    icon: "chatbubbles",
+    color: COLORS.coral,
+    backgroundColor: COLORS.coralSoft,
+    eyebrow: "使用场景",
+    title: "想说，却不知道怎么说？",
+    description: "聊天、旅行、课堂或工作中，只要遇到一句想用英语表达的话，就把中文说给 Say It。它会帮你变成自然、日常的美式口语。",
+  },
+  {
+    icon: "bulb",
+    color: "#B98519",
+    backgroundColor: "#F7E8B8",
+    eyebrow: "核心方法",
+    title: "学习你真正想说的话",
+    description: "不背脱离生活的固定课文。用自己的经历生成句子，再通过听、跟读和检验反复练习，慢慢建立属于你的口语表达库。",
+  },
+  {
     icon: "mic",
     color: COLORS.red,
     backgroundColor: COLORS.redSoft,
-    eyebrow: "第一步",
+    eyebrow: "操作 1 / 4",
     title: "说一段中文",
     description: "点击红色录音按钮，说出你真正想表达的话。每次最长 60 秒，也可以暂停和继续。",
   },
@@ -131,7 +147,7 @@ const GUIDE_STEPS: {
     icon: "sparkles",
     color: COLORS.coral,
     backgroundColor: COLORS.coralSoft,
-    eyebrow: "第二步",
+    eyebrow: "操作 2 / 4",
     title: "生成自然英语",
     description: "确认中文内容后，Say It 会生成日常美式口语。点击右上角“下一步”，生成发音并保存学习单元。",
   },
@@ -139,7 +155,7 @@ const GUIDE_STEPS: {
     icon: "headset",
     color: COLORS.green,
     backgroundColor: COLORS.greenSoft,
-    eyebrow: "第三步",
+    eyebrow: "操作 3 / 4",
     title: "听一句，跟读一句",
     description: "进入学习单元后，点击句子播放发音，点击单词查看解释。点击“检”进入检验模式。",
   },
@@ -147,7 +163,7 @@ const GUIDE_STEPS: {
     icon: "swap-horizontal",
     color: "#B98519",
     backgroundColor: "#F7E8B8",
-    eyebrow: "第四步",
+    eyebrow: "操作 4 / 4",
     title: "记录掌握状态",
     description: "检验时左滑表示已掌握，右滑表示未掌握。底部四个图标既可以点击，也可以左右滑动切换页面。",
   },
