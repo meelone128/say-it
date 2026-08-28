@@ -18,7 +18,7 @@ describe('AppController', () => {
     it('should report the API as healthy', () => {
       expect(appController.getHealth()).toEqual({
         status: 'ok',
-        service: 'spoken-english-api',
+        service: 'say-it-api',
       });
     });
   });

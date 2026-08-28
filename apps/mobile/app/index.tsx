@@ -2492,8 +2492,8 @@ function AboutSheet({
             </Pressable>
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={styles.aboutSectionTitle}>英语口语练习助手</Text>
-            <Text style={styles.aboutText}>版本 1.0 · 让你把想说的话，练成自然英语。</Text>
+            <Text style={styles.aboutSectionTitle}>Say It</Text>
+            <Text style={styles.aboutText}>让你把想说的话，练成自然英语。</Text>
             <Text style={styles.aboutSectionTitle}>我们如何使用数据</Text>
             <Text style={styles.aboutText}>你主动录制的中文音频会发送给语音与 AI 服务，用于转写、生成自然英语和英语发音。登录后，学习单元、句子状态和生成音频会同步到你的个人账号。</Text>
             <Text style={styles.aboutSectionTitle}>删除与控制</Text>

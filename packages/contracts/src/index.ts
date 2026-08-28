@@ -30,5 +30,5 @@ export interface LearningUnit {
 
 export interface HealthResponse {
   status: 'ok';
-  service: 'spoken-english-api';
+  service: 'say-it-api';
 }

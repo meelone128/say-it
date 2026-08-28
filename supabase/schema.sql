@@ -1,4 +1,4 @@
--- 英语口语练习助手：账号资料与学习数据云端同步
+-- Say It：账号资料与学习数据云端同步
 -- 在 Supabase Dashboard → SQL Editor → New query 中完整粘贴并执行。
 
 create table if not exists public.profiles (

@@ -1,4 +1,4 @@
--- 英语口语练习助手：未掌握句子的复习日期
+-- Say It：未掌握句子的复习日期
 -- 在 Supabase Dashboard → SQL Editor → New query 中执行一次。
 
 alter table public.learning_sentences

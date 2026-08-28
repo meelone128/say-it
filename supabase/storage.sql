@@ -1,4 +1,4 @@
--- 英语口语练习助手：学习音频跨设备备份
+-- Say It：学习音频跨设备备份
 -- 在 Supabase Dashboard → SQL Editor → New query 中执行。
 
 insert into storage.buckets (id, name, public)

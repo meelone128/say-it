@@ -21,7 +21,7 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/api/v1/health')
       .expect(200)
-      .expect({ status: 'ok', service: 'spoken-english-api' });
+      .expect({ status: 'ok', service: 'say-it-api' });
   });
 
   afterEach(async () => {

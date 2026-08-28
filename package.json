@@ -1,5 +1,5 @@
 {
-  "name": "spoken-english-coach",
+  "name": "say-it",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,11 +8,11 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:mobile": "npm run start --workspace @spoken-english/mobile",
-    "dev:api": "npm run start:dev --workspace @spoken-english/api",
-    "build:api": "npm run build --workspace @spoken-english/api",
+    "dev:mobile": "npm run start --workspace @say-it/mobile",
+    "dev:api": "npm run start:dev --workspace @say-it/api",
+    "build:api": "npm run build --workspace @say-it/api",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspace @spoken-english/api -- --runInBand",
+    "test": "npm run test --workspace @say-it/api -- --runInBand",
     "eval:text:one": "node --env-file=.env.local evaluation/scripts/run-text-eval.mjs --limit=1",
     "eval:text:all": "node --env-file=.env.local evaluation/scripts/run-text-eval.mjs --all",
     "eval:asr": "node --env-file=.env.local evaluation/scripts/run-asr-eval.mjs",

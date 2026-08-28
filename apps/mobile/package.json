@@ -1,5 +1,5 @@
 {
-  "name": "@spoken-english/mobile",
+  "name": "@say-it/mobile",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {

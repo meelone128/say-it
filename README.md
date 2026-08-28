@@ -1,6 +1,6 @@
-# 英语口语练习助手
+# Say It
 
-面向希望提升日常英语口语的用户：录制最长 60 秒中文，生成自然美式英语学习单元，并支持逐句播放、文章学习、检验与复习。
+Say It 面向希望提升日常英语口语的用户：录制最长 60 秒中文，生成自然美式英语学习单元，并支持逐句播放、文章学习、检验与复习。
 
 ## 当前工程
 
@@ -36,8 +36,8 @@ API 健康检查：`GET http://localhost:3000/api/v1/health`
 npm run typecheck
 npm run test
 npm run build:api
-npm run lint --workspace @spoken-english/mobile
-npm run lint --workspace @spoken-english/api
+npm run lint --workspace @say-it/mobile
+npm run lint --workspace @say-it/api
 ```
 
 ## AI 默认组合
