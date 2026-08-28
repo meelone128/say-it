@@ -2,7 +2,7 @@
   "expo": {
     "name": "Say It",
     "slug": "spoken-english-coach",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "spokenenglish",
@@ -13,7 +13,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E9E0FF",
+        "backgroundColor": "#FFFDF9",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "permissions": [
@@ -22,7 +22,7 @@
       ],
       "predictiveBackGestureEnabled": false,
       "package": "com.spokenenglish.coach",
-      "versionCode": 9
+      "versionCode": 10
     },
     "web": {
       "output": "static",
@@ -36,9 +36,9 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#FFFDF9",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#FFFDF9"
           }
         }
       ],
