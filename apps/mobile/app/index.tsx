@@ -72,6 +72,20 @@ const MAX_RECORDING_MILLIS = 60_000;
 const GUIDE_STORAGE_KEY = "say-it-guide-completed-v2";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.31.31:3000/api/v1";
+const SPEECH_RECORDING_OPTIONS = {
+  ...RecordingPresets.HIGH_QUALITY,
+  sampleRate: 16000,
+  numberOfChannels: 1,
+  bitRate: 64000,
+  web: {
+    ...RecordingPresets.HIGH_QUALITY.web,
+    bitsPerSecond: 64000,
+  },
+};
+
+function warmUpApi() {
+  void fetch(`${API_BASE_URL}/health`).catch(() => undefined);
+}
 
 type RecordingPhase =
   | "idle"
@@ -180,6 +194,7 @@ export default function HomeScreen() {
   const [guideStep, setGuideStep] = useState(0);
 
   useEffect(() => {
+    warmUpApi();
     let isActive = true;
     void Storage.getItem(GUIDE_STORAGE_KEY)
       .then((completed) => {
@@ -313,6 +328,45 @@ function UserGuideModal({
 }) {
   const content = GUIDE_STEPS[step];
   const isLast = step === GUIDE_STEPS.length - 1;
+  const guideDragX = useRef(new Animated.Value(0)).current;
+  const onSwipeNext = onNext;
+  const onSwipeBack = onBack;
+  const guideSwipeResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onMoveShouldSetPanResponder: (_event, gesture) =>
+          Math.abs(gesture.dx) > 12 &&
+          Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25,
+        onPanResponderMove: (_event, gesture) => {
+          guideDragX.setValue(gesture.dx);
+        },
+        onPanResponderRelease: (_event, gesture) => {
+          const swipeNext = gesture.dx < -52 || gesture.vx < -0.5;
+          const swipeBack = gesture.dx > 52 || gesture.vx > 0.5;
+
+          if (swipeNext) onSwipeNext();
+          else if (swipeBack && step > 0) onSwipeBack();
+
+          Animated.spring(guideDragX, {
+            toValue: 0,
+            damping: 20,
+            stiffness: 220,
+            mass: 0.7,
+            useNativeDriver: true,
+          }).start();
+        },
+        onPanResponderTerminate: () => {
+          Animated.spring(guideDragX, {
+            toValue: 0,
+            damping: 20,
+            stiffness: 220,
+            mass: 0.7,
+            useNativeDriver: true,
+          }).start();
+        },
+      }),
+    [guideDragX, onSwipeBack, onSwipeNext, step],
+  );
 
   return (
     <Modal
@@ -322,7 +376,20 @@ function UserGuideModal({
       visible={visible}
     >
       <View style={styles.guideBackdrop}>
-        <View style={styles.guideCard}>
+        <Animated.View
+          {...guideSwipeResponder.panHandlers}
+          style={[
+            styles.guideCard,
+            {
+              opacity: guideDragX.interpolate({
+                inputRange: [-180, 0, 180],
+                outputRange: [0.82, 1, 0.82],
+                extrapolate: "clamp",
+              }),
+              transform: [{ translateX: guideDragX }],
+            },
+          ]}
+        >
           <View style={styles.guideTopRow}>
             <View style={styles.guideBrandPill}>
               <Text style={styles.guideBrandText}>SAY IT GUIDE</Text>
@@ -363,6 +430,7 @@ function UserGuideModal({
               />
             ))}
           </View>
+          <Text style={styles.guideSwipeHint}>左右滑动也可以翻页</Text>
 
           <View style={styles.guideActions}>
             <Pressable
@@ -396,7 +464,7 @@ function UserGuideModal({
               />
             </Pressable>
           </View>
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   );
@@ -492,7 +560,7 @@ function RecordPage({
 }: {
   onUnitSaved: (unit: SavedLearningUnit) => void;
 }) {
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorder = useAudioRecorder(SPEECH_RECORDING_OPTIONS);
   const recorderState = useAudioRecorderState(recorder);
   const player = useAudioPlayer(null, { updateInterval: 200 });
   const playerStatus = useAudioPlayerStatus(player);
@@ -556,6 +624,7 @@ function RecordPage({
   const startRecording = async () => {
     if (isBusy) return;
 
+    warmUpApi();
     setIsBusy(true);
     try {
       const permission = await AudioModule.requestRecordingPermissionsAsync();
@@ -3871,6 +3940,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#D8D3E2",
   },
   guideDotActive: { width: 24, backgroundColor: COLORS.coral },
+  guideSwipeHint: {
+    marginTop: 10,
+    color: COLORS.muted,
+    fontSize: 12,
+    textAlign: "center",
+  },
   guideActions: { marginTop: 24, flexDirection: "row", gap: 11 },
   guideBackButton: {
     flex: 1,

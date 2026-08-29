@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:user-feedback": "node ./scripts/check-user-feedback.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
