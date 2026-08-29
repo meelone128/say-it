@@ -15,6 +15,7 @@ import {
 } from "../../src/data/learning-units";
 
 type RecordKind = "unmastered" | "mastered" | "favorites";
+const RECORDS_BACKGROUND = "#FBFAFF";
 
 export default function LearningRecordRoute() {
   const router = useRouter();
@@ -108,12 +109,12 @@ export default function LearningRecordRoute() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#FFF9EF" },
+  safeArea: { flex: 1, backgroundColor: RECORDS_BACKGROUND },
   center: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFF9EF",
+    backgroundColor: RECORDS_BACKGROUND,
   },
   message: { marginTop: 14, color: "#817D73", fontSize: 14 },
 });

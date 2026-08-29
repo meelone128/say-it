@@ -2,7 +2,7 @@
   "expo": {
     "name": "Say It",
     "slug": "spoken-english-coach",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "spokenenglish",
@@ -22,7 +22,7 @@
       ],
       "predictiveBackGestureEnabled": false,
       "package": "com.spokenenglish.coach",
-      "versionCode": 12
+      "versionCode": 13
     },
     "web": {
       "output": "static",

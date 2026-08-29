@@ -3585,7 +3585,12 @@ const styles = StyleSheet.create({
   progressTitle: { color: COLORS.ink, fontSize: 22, fontWeight: "900" },
   progressSubtitle: { marginTop: 7, color: COLORS.muted, fontSize: 13 },
   progressCount: { color: COLORS.ink, fontSize: 30, fontWeight: "900" },
-  recordDetailPage: { flex: 1, paddingHorizontal: 22, paddingTop: 10 },
+  recordDetailPage: {
+    flex: 1,
+    paddingHorizontal: 22,
+    paddingTop: 10,
+    backgroundColor: COLORS.canvas,
+  },
   detailHeader: {
     flexDirection: "row",
     alignItems: "center",
