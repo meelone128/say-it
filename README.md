@@ -49,8 +49,4 @@ npm run lint --workspace @say-it/api
 
 API Key 只保存在本地 `.env.local`，禁止提交。可从 `.env.example` 查看所需变量。
 
-## 当前开发状态
 
-项目骨架和 AI 供应商验证已完成。下一模块是移动端录音首页，包括权限、60 秒限制、暂停/继续、句首保护和录音预览。
-
-当前移动端固定使用 Expo SDK 54，与测试手机中的 Expo Go 实际支持版本保持一致。正式发布前仍需使用 development build 做原生能力和发布配置验证，并重新执行依赖安全审计。
