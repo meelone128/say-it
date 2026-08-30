@@ -5,12 +5,23 @@ const source = fs.readFileSync(
   path.join(__dirname, "..", "app", "index.tsx"),
   "utf8",
 );
+const guideStart = source.indexOf("function UserGuideModal");
+const guideEnd = source.indexOf("function RecordPage", guideStart);
+const guideSource = source.slice(guideStart, guideEnd);
 
 const checks = [
-  [source.includes('onPress={onNext}'), "教程必须保留下一页按钮"],
-  [source.includes("guideSwipeResponder.panHandlers"), "教程卡片必须接入滑动手势"],
-  [source.includes("onSwipeNext"), "教程必须支持左滑进入下一页"],
-  [source.includes("onSwipeBack"), "教程必须支持右滑返回上一页"],
+  [guideSource.includes('onPress={onNext}'), "教程必须保留下一页按钮"],
+  [
+    source.includes('const GUIDE_STORAGE_KEY = "say-it-guide-completed-v3"'),
+    "新版教程必须使用新的完成标记，确保升级用户会重新看到教程",
+  ],
+  [
+    guideSource.includes("horizontal") && guideSource.includes("pagingEnabled"),
+    "教程必须使用系统原生横向分页",
+  ],
+  [guideSource.includes("onMomentumScrollEnd"), "滑动结束后必须同步教程页码"],
+  [!guideSource.includes("guideSwipeResponder"), "教程必须移除不可靠的手写滑动响应器"],
+  [!guideSource.includes("guideSwipeHint"), "教程视觉应恢复上一版，不显示新增滑动提示"],
   [source.includes("SPEECH_RECORDING_OPTIONS"), "录音必须使用语音识别专用配置"],
   [source.includes("sampleRate: 16000"), "语音录音采样率应为 16 kHz"],
   [source.includes("numberOfChannels: 1"), "语音录音应使用单声道"],

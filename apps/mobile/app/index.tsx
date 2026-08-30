@@ -69,7 +69,7 @@ const PAGE_ICONS: (keyof typeof Ionicons.glyphMap)[] = [
   "person",
 ];
 const MAX_RECORDING_MILLIS = 60_000;
-const GUIDE_STORAGE_KEY = "say-it-guide-completed-v2";
+const GUIDE_STORAGE_KEY = "say-it-guide-completed-v3";
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.31.31:3000/api/v1";
 const SPEECH_RECORDING_OPTIONS = {
@@ -326,47 +326,27 @@ function UserGuideModal({
   onClose: () => void;
   onNext: () => void;
 }) {
-  const content = GUIDE_STEPS[step];
-  const isLast = step === GUIDE_STEPS.length - 1;
-  const guideDragX = useRef(new Animated.Value(0)).current;
-  const onSwipeNext = onNext;
-  const onSwipeBack = onBack;
-  const guideSwipeResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: (_event, gesture) =>
-          Math.abs(gesture.dx) > 12 &&
-          Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25,
-        onPanResponderMove: (_event, gesture) => {
-          guideDragX.setValue(gesture.dx);
-        },
-        onPanResponderRelease: (_event, gesture) => {
-          const swipeNext = gesture.dx < -52 || gesture.vx < -0.5;
-          const swipeBack = gesture.dx > 52 || gesture.vx > 0.5;
+  const { width } = useWindowDimensions();
+  const guideWidth = Math.min(width - 44, 430);
+  const guidePagerRef = useRef<ScrollView>(null);
 
-          if (swipeNext) onSwipeNext();
-          else if (swipeBack && step > 0) onSwipeBack();
+  useEffect(() => {
+    if (!visible) return;
+    guidePagerRef.current?.scrollTo({
+      x: guideWidth * step,
+      animated: false,
+    });
+  }, [guideWidth, step, visible]);
 
-          Animated.spring(guideDragX, {
-            toValue: 0,
-            damping: 20,
-            stiffness: 220,
-            mass: 0.7,
-            useNativeDriver: true,
-          }).start();
-        },
-        onPanResponderTerminate: () => {
-          Animated.spring(guideDragX, {
-            toValue: 0,
-            damping: 20,
-            stiffness: 220,
-            mass: 0.7,
-            useNativeDriver: true,
-          }).start();
-        },
-      }),
-    [guideDragX, onSwipeBack, onSwipeNext, step],
-  );
+  const handleGuideSwipe = (
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) => {
+    const nextStep = Math.round(
+      event.nativeEvent.contentOffset.x / guideWidth,
+    );
+    if (nextStep > step) onNext();
+    else if (nextStep < step) onBack();
+  };
 
   return (
     <Modal
@@ -376,95 +356,109 @@ function UserGuideModal({
       visible={visible}
     >
       <View style={styles.guideBackdrop}>
-        <Animated.View
-          {...guideSwipeResponder.panHandlers}
-          style={[
-            styles.guideCard,
-            {
-              opacity: guideDragX.interpolate({
-                inputRange: [-180, 0, 180],
-                outputRange: [0.82, 1, 0.82],
-                extrapolate: "clamp",
-              }),
-              transform: [{ translateX: guideDragX }],
-            },
-          ]}
+        <ScrollView
+          ref={guidePagerRef}
+          horizontal
+          pagingEnabled
+          bounces={false}
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={handleGuideSwipe}
+          style={[styles.guidePager, { width: guideWidth }]}
         >
-          <View style={styles.guideTopRow}>
-            <View style={styles.guideBrandPill}>
-              <Text style={styles.guideBrandText}>SAY IT GUIDE</Text>
-            </View>
-            <Pressable
-              accessibilityLabel="关闭使用教程"
-              onPress={onClose}
-              style={({ pressed }) => [
-                styles.guideCloseButton,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Ionicons name="close" size={22} color={COLORS.ink} />
-            </Pressable>
-          </View>
-
-          <View
-            style={[
-              styles.guideIcon,
-              { backgroundColor: content.backgroundColor },
-            ]}
-          >
-            <Ionicons name={content.icon} size={42} color={content.color} />
-          </View>
-
-          <Text style={styles.guideEyebrow}>{content.eyebrow}</Text>
-          <Text style={styles.guideTitle}>{content.title}</Text>
-          <Text style={styles.guideDescription}>{content.description}</Text>
-
-          <View style={styles.guideDots}>
-            {GUIDE_STEPS.map((item, index) => (
+          {GUIDE_STEPS.map((content, pageIndex) => {
+            const isLast = pageIndex === GUIDE_STEPS.length - 1;
+            return (
               <View
-                key={item.title}
-                style={[
-                  styles.guideDot,
-                  index === step && styles.guideDotActive,
-                ]}
-              />
-            ))}
-          </View>
-          <Text style={styles.guideSwipeHint}>左右滑动也可以翻页</Text>
+                key={content.title}
+                style={[styles.guideCard, { width: guideWidth }]}
+              >
+                <View style={styles.guideTopRow}>
+                  <View style={styles.guideBrandPill}>
+                    <Text style={styles.guideBrandText}>SAY IT GUIDE</Text>
+                  </View>
+                  <Pressable
+                    accessibilityLabel="关闭使用教程"
+                    onPress={onClose}
+                    style={({ pressed }) => [
+                      styles.guideCloseButton,
+                      pressed && styles.pressed,
+                    ]}
+                  >
+                    <Ionicons name="close" size={22} color={COLORS.ink} />
+                  </Pressable>
+                </View>
 
-          <View style={styles.guideActions}>
-            <Pressable
-              onPress={step > 0 ? onBack : onClose}
-              style={({ pressed }) => [
-                styles.guideBackButton,
-                pressed && styles.pressed,
-              ]}
-            >
-              {step > 0 ? (
-                <Ionicons name="arrow-back" size={18} color={COLORS.ink} />
-              ) : null}
-              <Text style={styles.guideBackText}>
-                {step > 0 ? "上一步" : "暂时跳过"}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={onNext}
-              style={({ pressed }) => [
-                styles.guideNextButton,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.guideNextText}>
-                {isLast ? "开始使用" : "下一步"}
-              </Text>
-              <Ionicons
-                name={isLast ? "checkmark" : "arrow-forward"}
-                size={18}
-                color="#FFFFFF"
-              />
-            </Pressable>
-          </View>
-        </Animated.View>
+                <View
+                  style={[
+                    styles.guideIcon,
+                    { backgroundColor: content.backgroundColor },
+                  ]}
+                >
+                  <Ionicons
+                    name={content.icon}
+                    size={42}
+                    color={content.color}
+                  />
+                </View>
+
+                <Text style={styles.guideEyebrow}>{content.eyebrow}</Text>
+                <Text style={styles.guideTitle}>{content.title}</Text>
+                <Text style={styles.guideDescription}>
+                  {content.description}
+                </Text>
+
+                <View style={styles.guideDots}>
+                  {GUIDE_STEPS.map((item, index) => (
+                    <View
+                      key={item.title}
+                      style={[
+                        styles.guideDot,
+                        index === pageIndex && styles.guideDotActive,
+                      ]}
+                    />
+                  ))}
+                </View>
+
+                <View style={styles.guideActions}>
+                  <Pressable
+                    onPress={pageIndex > 0 ? onBack : onClose}
+                    style={({ pressed }) => [
+                      styles.guideBackButton,
+                      pressed && styles.pressed,
+                    ]}
+                  >
+                    {pageIndex > 0 ? (
+                      <Ionicons
+                        name="arrow-back"
+                        size={18}
+                        color={COLORS.ink}
+                      />
+                    ) : null}
+                    <Text style={styles.guideBackText}>
+                      {pageIndex > 0 ? "上一步" : "暂时跳过"}
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={onNext}
+                    style={({ pressed }) => [
+                      styles.guideNextButton,
+                      pressed && styles.pressed,
+                    ]}
+                  >
+                    <Text style={styles.guideNextText}>
+                      {isLast ? "开始使用" : "下一步"}
+                    </Text>
+                    <Ionicons
+                      name={isLast ? "checkmark" : "arrow-forward"}
+                      size={18}
+                      color="#FFFFFF"
+                    />
+                  </Pressable>
+                </View>
+              </View>
+            );
+          })}
+        </ScrollView>
       </View>
     </Modal>
   );
@@ -3859,6 +3853,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "rgba(24,23,25,0.46)",
   },
+  guidePager: {
+    flexGrow: 0,
+    borderRadius: 32,
+  },
   guideCard: {
     width: "100%",
     maxWidth: 430,
@@ -3940,12 +3938,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#D8D3E2",
   },
   guideDotActive: { width: 24, backgroundColor: COLORS.coral },
-  guideSwipeHint: {
-    marginTop: 10,
-    color: COLORS.muted,
-    fontSize: 12,
-    textAlign: "center",
-  },
   guideActions: { marginTop: 24, flexDirection: "row", gap: 11 },
   guideBackButton: {
     flex: 1,
