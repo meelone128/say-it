@@ -15,6 +15,7 @@ interface DashScopeSpeechResponse {
 
 const DEFAULT_MODEL = 'cosyvoice-v3-flash';
 const DEFAULT_VOICE = 'loongabby_v3';
+const RATE_LIMIT_RETRY_DELAYS_MS = [1_000, 2_000] as const;
 const DEFAULT_ENDPOINT =
   'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer';
 
@@ -29,10 +30,9 @@ export class SpeechService {
     const model = process.env.DASHSCOPE_TTS_MODEL || DEFAULT_MODEL;
     const voice = process.env.DASHSCOPE_TTS_VOICE || DEFAULT_VOICE;
     const endpoint = process.env.DASHSCOPE_TTS_ENDPOINT || DEFAULT_ENDPOINT;
-    const audios = await mapWithConcurrency(
-      sentences,
-      5,
-      async (text, index) => ({
+    const audios = [];
+    for (const [index, text] of sentences.entries()) {
+      audios.push({
         sequence: index + 1,
         audioUrl: await this.synthesizeOne({
           apiKey,
@@ -41,8 +41,8 @@ export class SpeechService {
           voice,
           text,
         }),
-      }),
-    );
+      });
+    }
 
     return { audios, model, voice };
   }
@@ -54,43 +54,63 @@ export class SpeechService {
     voice: string;
     text: string;
   }) {
-    let response: Response;
-    try {
-      response = await fetch(options.endpoint, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${options.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: options.model,
-          input: {
-            text: options.text,
-            voice: options.voice,
-            format: 'mp3',
-            sample_rate: 24000,
+    for (
+      let attempt = 0;
+      attempt <= RATE_LIMIT_RETRY_DELAYS_MS.length;
+      attempt += 1
+    ) {
+      let response: Response;
+      try {
+        response = await fetch(options.endpoint, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${options.apiKey}`,
+            'Content-Type': 'application/json',
           },
-        }),
-        signal: AbortSignal.timeout(90_000),
-      });
-    } catch {
-      throw new BadGatewayException('暂时无法连接英语发音服务，请稍后重试');
-    }
+          body: JSON.stringify({
+            model: options.model,
+            input: {
+              text: options.text,
+              voice: options.voice,
+              format: 'mp3',
+              sample_rate: 24000,
+            },
+          }),
+          signal: AbortSignal.timeout(90_000),
+        });
+      } catch {
+        throw new BadGatewayException('暂时无法连接英语发音服务，请稍后重试');
+      }
 
-    const body = (await response
-      .json()
-      .catch(() => ({}))) as DashScopeSpeechResponse;
-    if (!response.ok) {
+      const body = (await response
+        .json()
+        .catch(() => ({}))) as DashScopeSpeechResponse;
+      const providerMessage = body.message || body.error?.message || '';
+      if (response.ok) {
+        const audioUrl = body.output?.audio?.url || body.output?.url;
+        if (!audioUrl) {
+          throw new BadGatewayException('英语发音结果为空，请重新生成');
+        }
+        return makeAudioUrlSecure(audioUrl);
+      }
+
+      if (isRateLimited(response.status, providerMessage)) {
+        const retryDelay = RATE_LIMIT_RETRY_DELAYS_MS[attempt];
+        if (retryDelay) {
+          await delay(retryDelay);
+          continue;
+        }
+        throw new ServiceUnavailableException(
+          '英语发音服务当前较忙，已自动重试。请等待几秒后再试。',
+        );
+      }
+
       throw new BadGatewayException(
-        body.message || body.error?.message || '英语发音生成失败，请稍后重试',
+        providerMessage || '英语发音生成失败，请稍后重试',
       );
     }
 
-    const audioUrl = body.output?.audio?.url || body.output?.url;
-    if (!audioUrl) {
-      throw new BadGatewayException('英语发音结果为空，请重新生成');
-    }
-    return makeAudioUrlSecure(audioUrl);
+    throw new ServiceUnavailableException('英语发音服务当前较忙，请稍后重试。');
   }
 }
 
@@ -110,24 +130,10 @@ function makeAudioUrlSecure(audioUrl: string): string {
   }
 }
 
-async function mapWithConcurrency<T, R>(
-  values: T[],
-  concurrency: number,
-  mapper: (value: T, index: number) => Promise<R>,
-) {
-  const results = new Array<R>(values.length);
-  let nextIndex = 0;
+function isRateLimited(status: number, message: string) {
+  return status === 429 || /rate limit|too many requests/i.test(message);
+}
 
-  const workers = Array.from(
-    { length: Math.min(concurrency, values.length) },
-    async () => {
-      while (nextIndex < values.length) {
-        const index = nextIndex++;
-        results[index] = await mapper(values[index], index);
-      }
-    },
-  );
-
-  await Promise.all(workers);
-  return results;
+function delay(milliseconds: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 }

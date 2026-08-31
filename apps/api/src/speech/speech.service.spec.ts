@@ -22,7 +22,7 @@ describe('SpeechService', () => {
           output: { audio: { url: `https://audio.test/${call}.mp3` } },
         }),
       };
-    }) as jest.Mock;
+    });
 
     const result = await new SpeechService().synthesize([
       'Hello.',
@@ -33,7 +33,7 @@ describe('SpeechService', () => {
     expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 
-  it('generates a long unit in two batches or fewer', async () => {
+  it('queues a long unit one sentence at a time to respect provider limits', async () => {
     process.env.DASHSCOPE_API_KEY = 'test-key';
     let call = 0;
     global.fetch = jest.fn().mockImplementation(
@@ -51,14 +51,36 @@ describe('SpeechService', () => {
             30,
           );
         }),
-    ) as jest.Mock;
+    );
 
     const startedAt = Date.now();
     await new SpeechService().synthesize(
       Array.from({ length: 10 }, (_, index) => `Sentence ${index + 1}.`),
     );
 
-    expect(Date.now() - startedAt).toBeLessThan(100);
+    expect(Date.now() - startedAt).toBeGreaterThanOrEqual(250);
+  });
+
+  it('retries a rate-limited sentence before returning its audio', async () => {
+    process.env.DASHSCOPE_API_KEY = 'test-key';
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        json: async () => ({ message: 'Requests rate limit exceeded' }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          output: { audio: { url: 'https://audio.test/retried.mp3' } },
+        }),
+      });
+
+    const result = await new SpeechService().synthesize(['Hello.']);
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+    expect(result.audios[0].audioUrl).toBe('https://audio.test/retried.mp3');
   });
 
   it('upgrades DashScope audio links to HTTPS for Android downloads', async () => {
@@ -72,7 +94,7 @@ describe('SpeechService', () => {
           },
         },
       }),
-    }) as jest.Mock;
+    });
 
     const result = await new SpeechService().synthesize(['Hello.']);
 

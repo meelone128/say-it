@@ -14,8 +14,8 @@ export class SpeechController {
     if (!Array.isArray(body?.sentences) || body.sentences.length === 0) {
       throw new BadRequestException('请提供需要朗读的英语句子');
     }
-    if (body.sentences.length > 12) {
-      throw new BadRequestException('一次最多生成 12 句话的发音');
+    if (body.sentences.length > 30) {
+      throw new BadRequestException('一次最多生成 30 句话的发音');
     }
 
     const sentences = body.sentences.map((value) => {
