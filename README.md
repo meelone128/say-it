@@ -13,11 +13,19 @@ Say It 是一款面向日常英语口语学习者的 AI 移动应用。它不从
 从一句中文开始，到可以复习的个人英语表达。
 
 <p align="center">
-  <img src="docs/images/say-it-product-showcase.png" alt="Say It 产品效果图：录入中文、生成自然英语、持续复习" width="100%" />
+  <img src="docs/images/say-it-product-showcase-clean.png" alt="Say It 产品效果图：录入中文、生成自然英语、持续复习" width="100%" />
 </p>
 
 <p align="center">
   <sub>录下真实想说的话　·　生成可跟读的自然英语　·　通过学习记录持续复习</sub>
+</p>
+
+### 首次上手
+
+首次打开会通过四步教程说明完整用法：说中文、生成自然英语、逐句听读，以及记录掌握状态。
+
+<p align="center">
+  <img src="docs/images/say-it-onboarding-showcase.png" alt="Say It 四步使用教程：说中文、生成自然英语、逐句听读、记录掌握状态" width="100%" />
 </p>
 
 ## 核心体验
