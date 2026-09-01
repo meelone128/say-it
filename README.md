@@ -8,6 +8,20 @@ Say It 是一款面向日常英语口语学习者的 AI 移动应用。它不从
 
 当前处于 Android 公开内测阶段。
 
+## 产品效果
+
+从一句中文开始，到可以复习的个人英语表达。以下均为 Say It 当前 Android 内测版的真实界面：
+
+<p align="center">
+  <img src="docs/images/say-it-record.jpg" alt="Say It 录制中文" width="31%" />
+  <img src="docs/images/say-it-generated-english.jpg" alt="Say It 生成自然英语" width="31%" />
+  <img src="docs/images/say-it-learning-record.jpg" alt="Say It 学习记录" width="31%" />
+</p>
+
+<p align="center">
+  <sub>录下真实想说的话　·　生成可跟读的自然英语　·　通过学习记录持续复习</sub>
+</p>
+
 ## 核心体验
 
 1. **说中文**：录制一段中文，支持暂停、继续和最长 60 秒限制。
@@ -46,7 +60,7 @@ evaluation/      AI 模型评测语料、脚本与契约
 
 ## 内测版本
 
-当前稳定内测版为 **Say It 1.0.14**。Android 安装包通过 Expo 内部分发，具体下载链接会随每次构建更新。
+当前内测构建为 **Say It 1.0.15 (16)**。Android 安装包通过 Expo 内部分发，具体下载链接会随每次构建更新。
 
 ## 本地启动
 
