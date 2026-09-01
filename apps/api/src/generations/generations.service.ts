@@ -3,6 +3,10 @@ import {
   Injectable,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import {
+  fetchProviderWithRetry,
+  ProviderRateLimitError,
+} from '../common/provider-retry';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
@@ -46,7 +50,7 @@ export class GenerationsService {
 
     let response: Response;
     try {
-      response = await fetch(`${baseUrl}/chat/completions`, {
+      response = await fetchProviderWithRetry(`${baseUrl}/chat/completions`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -71,7 +75,12 @@ export class GenerationsService {
         }),
         signal: AbortSignal.timeout(90_000),
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof ProviderRateLimitError) {
+        throw new ServiceUnavailableException(
+          '英语生成服务当前较忙，已自动重试。请等待几秒后再试。',
+        );
+      }
       throw new BadGatewayException('暂时无法连接英语生成服务，请稍后重试');
     }
 
@@ -144,7 +153,7 @@ function normalizeSentences(value: unknown): GeneratedSentence[] {
     .filter(
       (item): item is Omit<GeneratedSentence, 'sequence'> => item !== null,
     )
-    .slice(0, 12);
+    .slice(0, 30);
 
   return sentences.map((sentence, index) => ({
     sequence: index + 1,
@@ -163,7 +172,7 @@ function normalizeSentence(sentence: RawSentence) {
 
   const englishText = sentence.english_text.trim();
   const chineseMeaning = sentence.chinese_meaning.trim();
-  if (!englishText || !chineseMeaning || !/[.!?][\"'”’]?$/.test(englishText))
+  if (!englishText || !chineseMeaning || !/[.!?]["'”’]?$/.test(englishText))
     return null;
 
   return { englishText, chineseMeaning };

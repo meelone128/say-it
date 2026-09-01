@@ -30,9 +30,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const handleAuthUrl = useCallback(async (url: string) => {
     const parsed = Linking.parse(url);
-    const code = typeof parsed.queryParams?.code === "string"
-      ? parsed.queryParams.code
-      : undefined;
+    const code =
+      typeof parsed.queryParams?.code === "string"
+        ? parsed.queryParams.code
+        : undefined;
     if (code) {
       await supabase.auth.exchangeCodeForSession(code);
     }
@@ -40,18 +41,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    void supabase.auth.getSession().then(({ data }) => {
-      if (active) {
-        setSession(data.session);
-        setIsLoading(false);
-      }
-    });
+    void supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (active) setSession(data.session);
+      })
+      .catch(() => {
+        if (active) setSession(null);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
 
     void Linking.getInitialURL().then((url) => {
-      if (url) void handleAuthUrl(url);
+      if (url) void handleAuthUrl(url).catch(() => undefined);
     });
     const linkingSubscription = Linking.addEventListener("url", ({ url }) => {
-      void handleAuthUrl(url);
+      void handleAuthUrl(url).catch(() => undefined);
     });
     const authSubscription = supabase.auth.onAuthStateChange(
       (_event, nextSession) => {

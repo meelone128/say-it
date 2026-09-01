@@ -3,6 +3,10 @@ import {
   Injectable,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import {
+  fetchProviderWithRetry,
+  ProviderRateLimitError,
+} from '../common/provider-retry';
 
 interface DashScopeSpeechResponse {
   output?: {
@@ -15,7 +19,6 @@ interface DashScopeSpeechResponse {
 
 const DEFAULT_MODEL = 'cosyvoice-v3-flash';
 const DEFAULT_VOICE = 'loongabby_v3';
-const RATE_LIMIT_RETRY_DELAYS_MS = [1_000, 2_000] as const;
 const DEFAULT_ENDPOINT =
   'https://dashscope.aliyuncs.com/api/v1/services/audio/tts/SpeechSynthesizer';
 
@@ -54,63 +57,48 @@ export class SpeechService {
     voice: string;
     text: string;
   }) {
-    for (
-      let attempt = 0;
-      attempt <= RATE_LIMIT_RETRY_DELAYS_MS.length;
-      attempt += 1
-    ) {
-      let response: Response;
-      try {
-        response = await fetch(options.endpoint, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${options.apiKey}`,
-            'Content-Type': 'application/json',
+    let response: Response;
+    try {
+      response = await fetchProviderWithRetry(options.endpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${options.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: options.model,
+          input: {
+            text: options.text,
+            voice: options.voice,
+            format: 'mp3',
+            sample_rate: 24000,
           },
-          body: JSON.stringify({
-            model: options.model,
-            input: {
-              text: options.text,
-              voice: options.voice,
-              format: 'mp3',
-              sample_rate: 24000,
-            },
-          }),
-          signal: AbortSignal.timeout(90_000),
-        });
-      } catch {
-        throw new BadGatewayException('暂时无法连接英语发音服务，请稍后重试');
-      }
-
-      const body = (await response
-        .json()
-        .catch(() => ({}))) as DashScopeSpeechResponse;
-      const providerMessage = body.message || body.error?.message || '';
-      if (response.ok) {
-        const audioUrl = body.output?.audio?.url || body.output?.url;
-        if (!audioUrl) {
-          throw new BadGatewayException('英语发音结果为空，请重新生成');
-        }
-        return makeAudioUrlSecure(audioUrl);
-      }
-
-      if (isRateLimited(response.status, providerMessage)) {
-        const retryDelay = RATE_LIMIT_RETRY_DELAYS_MS[attempt];
-        if (retryDelay) {
-          await delay(retryDelay);
-          continue;
-        }
+        }),
+        signal: AbortSignal.timeout(90_000),
+      });
+    } catch (error) {
+      if (error instanceof ProviderRateLimitError) {
         throw new ServiceUnavailableException(
           '英语发音服务当前较忙，已自动重试。请等待几秒后再试。',
         );
       }
+      throw new BadGatewayException('暂时无法连接英语发音服务，请稍后重试');
+    }
 
+    const body = (await response
+      .json()
+      .catch(() => ({}))) as DashScopeSpeechResponse;
+    if (!response.ok) {
       throw new BadGatewayException(
-        providerMessage || '英语发音生成失败，请稍后重试',
+        body.message || body.error?.message || '英语发音生成失败，请稍后重试',
       );
     }
 
-    throw new ServiceUnavailableException('英语发音服务当前较忙，请稍后重试。');
+    const audioUrl = body.output?.audio?.url || body.output?.url;
+    if (!audioUrl) {
+      throw new BadGatewayException('英语发音结果为空，请重新生成');
+    }
+    return makeAudioUrlSecure(audioUrl);
   }
 }
 
@@ -128,12 +116,4 @@ function makeAudioUrlSecure(audioUrl: string): string {
   } catch {
     return audioUrl;
   }
-}
-
-function isRateLimited(status: number, message: string) {
-  return status === 429 || /rate limit|too many requests/i.test(message);
-}
-
-function delay(milliseconds: number) {
-  return new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 }

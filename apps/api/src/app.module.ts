@@ -9,6 +9,7 @@ import { SpeechController } from './speech/speech.controller';
 import { SpeechService } from './speech/speech.service';
 import { TranscriptionsController } from './transcriptions/transcriptions.controller';
 import { TranscriptionsService } from './transcriptions/transcriptions.service';
+import { RequestRateLimitGuard } from './common/request-rate-limit.guard';
 
 @Module({
   imports: [],
@@ -25,6 +26,7 @@ import { TranscriptionsService } from './transcriptions/transcriptions.service';
     GenerationsService,
     DictionaryService,
     SpeechService,
+    RequestRateLimitGuard,
   ],
 })
 export class AppModule {}

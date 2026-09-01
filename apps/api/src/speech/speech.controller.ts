@@ -1,4 +1,11 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { RequestRateLimitGuard } from '../common/request-rate-limit.guard';
 import { SpeechService } from './speech.service';
 
 interface SpeechRequest {
@@ -6,6 +13,7 @@ interface SpeechRequest {
 }
 
 @Controller('speech')
+@UseGuards(RequestRateLimitGuard)
 export class SpeechController {
   constructor(private readonly speechService: SpeechService) {}
 

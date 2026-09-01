@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { resolve } from 'node:path';
 import { AppModule } from './app.module';
 
@@ -9,7 +10,8 @@ async function bootstrap() {
     // Production environments inject variables directly and do not need this file.
   }
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.set('trust proxy', 1);
   app.setGlobalPrefix('api/v1');
   app.enableCors({
     origin: true,

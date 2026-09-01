@@ -3,8 +3,10 @@ import {
   Controller,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { RequestRateLimitGuard } from '../common/request-rate-limit.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   TranscriptionsService,
@@ -25,6 +27,7 @@ const ALLOWED_AUDIO_TYPES = new Set([
 ]);
 
 @Controller('transcriptions')
+@UseGuards(RequestRateLimitGuard)
 export class TranscriptionsController {
   constructor(private readonly transcriptionsService: TranscriptionsService) {}
 

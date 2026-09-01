@@ -139,7 +139,8 @@ const GUIDE_STEPS: {
     backgroundColor: COLORS.coralSoft,
     eyebrow: "使用场景",
     title: "想说，却不知道怎么说？",
-    description: "聊天、旅行、课堂或工作中，只要遇到一句想用英语表达的话，就把中文说给 Say It。它会帮你变成自然、日常的美式口语。",
+    description:
+      "聊天、旅行、课堂或工作中，只要遇到一句想用英语表达的话，就把中文说给 Say It。它会帮你变成自然、日常的美式口语。",
   },
   {
     icon: "bulb",
@@ -147,7 +148,8 @@ const GUIDE_STEPS: {
     backgroundColor: "#F7E8B8",
     eyebrow: "核心方法",
     title: "学习你真正想说的话",
-    description: "不背脱离生活的固定课文。用自己的经历生成句子，再通过听、跟读和检验反复练习，慢慢建立属于你的口语表达库。",
+    description:
+      "不背脱离生活的固定课文。用自己的经历生成句子，再通过听、跟读和检验反复练习，慢慢建立属于你的口语表达库。",
   },
   {
     icon: "mic",
@@ -155,7 +157,8 @@ const GUIDE_STEPS: {
     backgroundColor: COLORS.redSoft,
     eyebrow: "操作 1 / 4",
     title: "说一段中文",
-    description: "点击红色录音按钮，说出你真正想表达的话。每次最长 60 秒，也可以暂停和继续。",
+    description:
+      "点击红色录音按钮，说出你真正想表达的话。每次最长 60 秒，也可以暂停和继续。",
   },
   {
     icon: "sparkles",
@@ -163,7 +166,8 @@ const GUIDE_STEPS: {
     backgroundColor: COLORS.coralSoft,
     eyebrow: "操作 2 / 4",
     title: "生成自然英语",
-    description: "确认中文内容后，Say It 会生成日常美式口语。点击右上角“下一步”，生成发音并保存学习单元。",
+    description:
+      "确认中文内容后，Say It 会生成日常美式口语。点击右上角“下一步”，生成发音并保存学习单元。",
   },
   {
     icon: "headset",
@@ -171,7 +175,8 @@ const GUIDE_STEPS: {
     backgroundColor: COLORS.greenSoft,
     eyebrow: "操作 3 / 4",
     title: "听一句，跟读一句",
-    description: "进入学习单元后，点击句子播放发音，点击单词查看解释。点击“检”进入检验模式。",
+    description:
+      "进入学习单元后，点击句子播放发音，点击单词查看解释。点击“检”进入检验模式。",
   },
   {
     icon: "swap-horizontal",
@@ -179,7 +184,8 @@ const GUIDE_STEPS: {
     backgroundColor: "#F7E8B8",
     eyebrow: "操作 4 / 4",
     title: "记录掌握状态",
-    description: "检验时左滑表示已掌握，右滑表示未掌握。底部四个图标既可以点击，也可以左右滑动切换页面。",
+    description:
+      "检验时左滑表示已掌握，右滑表示未掌握。底部四个图标既可以点击，也可以左右滑动切换页面。",
   },
 ];
 
@@ -227,9 +233,8 @@ export default function HomeScreen() {
   const handleUnitDeleted = async (id: string) => {
     try {
       if (auth.user) {
-        const { deleteLearningUnitFromCloud } = await import(
-          "../src/data/cloud-sync"
-        );
+        const { deleteLearningUnitFromCloud } =
+          await import("../src/data/cloud-sync");
         await deleteLearningUnitFromCloud(auth.user.id, id);
       }
       await deleteLearningUnit(id);
@@ -237,7 +242,9 @@ export default function HomeScreen() {
     } catch {
       Alert.alert(
         "删除没有完成",
-        auth.user ? "请检查网络后重试，确保云端内容也能安全删除。" : "请稍后再试",
+        auth.user
+          ? "请检查网络后重试，确保云端内容也能安全删除。"
+          : "请稍后再试",
       );
     }
   };
@@ -338,12 +345,8 @@ function UserGuideModal({
     });
   }, [guideWidth, step, visible]);
 
-  const handleGuideSwipe = (
-    event: NativeSyntheticEvent<NativeScrollEvent>,
-  ) => {
-    const nextStep = Math.round(
-      event.nativeEvent.contentOffset.x / guideWidth,
-    );
+  const handleGuideSwipe = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const nextStep = Math.round(event.nativeEvent.contentOffset.x / guideWidth);
     if (nextStep > step) onNext();
     else if (nextStep < step) onBack();
   };
@@ -492,7 +495,9 @@ function BottomNavigation({
         />
         {PAGE_ICONS.map((icon, index) => (
           <Pressable
-            accessibilityLabel={["录音", "学习单元", "学习记录", "账号设置"][index]}
+            accessibilityLabel={
+              ["录音", "学习单元", "学习记录", "账号设置"][index]
+            }
             accessibilityRole="button"
             key={icon}
             onPress={() => onSelect(index)}
@@ -936,7 +941,6 @@ function RecordPage({
         ) : null}
       </View>
 
-
       <NamingModal
         isSaving={isSaving}
         title={unitTitle}
@@ -1281,7 +1285,9 @@ function EnglishPreview({
         </Pressable>
         <Text style={styles.previewTitle}>自然英语已生成</Text>
         <Pressable
-          accessibilityLabel={audios.length ? "保存学习单元" : "下一步，生成英语发音"}
+          accessibilityLabel={
+            audios.length ? "保存学习单元" : "下一步，生成英语发音"
+          }
           onPress={audios.length ? onSave : onSynthesize}
           style={({ pressed }) => [
             styles.previewNextButton,
@@ -1359,7 +1365,6 @@ function EnglishPreview({
           </View>
         ))}
       </ScrollView>
-
     </View>
   );
 }
@@ -1464,12 +1469,7 @@ function UnitsPage({
 }) {
   const router = useRouter();
   const [isGridLayout, setIsGridLayout] = useState(false);
-  const cardColors = [
-    "#FFBF67",
-    "#B7D4FA",
-    "#C9B9FF",
-    "#F2AED6",
-  ];
+  const cardColors = ["#FFBF67", "#B7D4FA", "#C9B9FF", "#F2AED6"];
 
   const toggleUnitLayout = () => {
     setIsGridLayout((current) => !current);
@@ -1505,7 +1505,9 @@ function UnitsPage({
         <View style={styles.unitsHeadingRow}>
           <Text style={styles.pageTitle}>学习单元</Text>
           <Pressable
-            accessibilityLabel={isGridLayout ? "切换为错开排列" : "切换为双列排列"}
+            accessibilityLabel={
+              isGridLayout ? "切换为错开排列" : "切换为双列排列"
+            }
             onPress={toggleUnitLayout}
             style={({ pressed }) => [
               styles.layoutToggleButton,
@@ -1544,9 +1546,7 @@ function UnitsPage({
             style={[
               styles.unitCard,
               !isGridLayout &&
-                (index % 2 === 0
-                  ? styles.unitCardLeft
-                  : styles.unitCardRight),
+                (index % 2 === 0 ? styles.unitCardLeft : styles.unitCardRight),
               isGridLayout && styles.unitCardGrid,
               { backgroundColor: cardColors[index % cardColors.length] },
             ]}
@@ -1563,24 +1563,24 @@ function UnitsPage({
                 pressed && styles.pressed,
               ]}
             >
-            <View style={styles.cardIconBubble}>
-              <Ionicons
-                name={cardIcons[index % cardIcons.length]}
-                size={23}
-                color={COLORS.ink}
-              />
-            </View>
-            <Pressable
-              hitSlop={8}
-              onPress={() => confirmDelete(unit)}
-              style={styles.cardDeleteButton}
-            >
-              <Ionicons name="trash-outline" size={19} color={COLORS.ink} />
-            </Pressable>
-            <Text numberOfLines={2} style={styles.unitName}>
-              {unit.title}
-            </Text>
-            <Text style={styles.unitTime}>{formatSavedAt(unit.savedAt)}</Text>
+              <View style={styles.cardIconBubble}>
+                <Ionicons
+                  name={cardIcons[index % cardIcons.length]}
+                  size={23}
+                  color={COLORS.ink}
+                />
+              </View>
+              <Pressable
+                hitSlop={8}
+                onPress={() => confirmDelete(unit)}
+                style={styles.cardDeleteButton}
+              >
+                <Ionicons name="trash-outline" size={19} color={COLORS.ink} />
+              </Pressable>
+              <Text numberOfLines={2} style={styles.unitName}>
+                {unit.title}
+              </Text>
+              <Text style={styles.unitTime}>{formatSavedAt(unit.savedAt)}</Text>
             </Pressable>
           </Reanimated.View>
         ))}
@@ -1788,7 +1788,7 @@ function ClickableEnglishText({
     <Text style={styles.articleEnglish}>
       {pieces.map((piece, index) => {
         if (!/^[A-Za-z]+(?:['’-][A-Za-z]+)*$/.test(piece)) return piece;
-        const word = piece.replace('’', "'");
+        const word = piece.replace("’", "'");
         return (
           <Text
             key={`${word}-${index}`}
@@ -1855,7 +1855,12 @@ function DictionarySheet({
   }, [onClose, target]);
 
   return (
-    <Modal transparent visible={Boolean(target)} animationType="slide" onRequestClose={onClose}>
+    <Modal
+      transparent
+      visible={Boolean(target)}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       <View style={styles.dictionaryBackdrop}>
         <Pressable style={styles.dictionaryDismissArea} onPress={onClose} />
         <View style={styles.dictionarySheet}>
@@ -1873,7 +1878,9 @@ function DictionarySheet({
           {isLoading ? (
             <View style={styles.dictionaryLoading}>
               <ActivityIndicator color={COLORS.coral} />
-              <Text style={styles.dictionaryLoadingText}>正在结合这句话解释…</Text>
+              <Text style={styles.dictionaryLoadingText}>
+                正在结合这句话解释…
+              </Text>
             </View>
           ) : entry ? (
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -1884,13 +1891,19 @@ function DictionarySheet({
               {entry.spokenNote ? (
                 <View style={styles.dictionaryNote}>
                   <Text style={styles.dictionaryNoteLabel}>口语里怎么用</Text>
-                  <Text style={styles.dictionaryNoteText}>{entry.spokenNote}</Text>
+                  <Text style={styles.dictionaryNoteText}>
+                    {entry.spokenNote}
+                  </Text>
                 </View>
               ) : null}
               {entry.example ? (
                 <View style={styles.dictionaryExample}>
-                  <Text style={styles.dictionaryExampleText}>{entry.example}</Text>
-                  <Text style={styles.dictionaryExampleChinese}>{entry.exampleChinese}</Text>
+                  <Text style={styles.dictionaryExampleText}>
+                    {entry.example}
+                  </Text>
+                  <Text style={styles.dictionaryExampleChinese}>
+                    {entry.exampleChinese}
+                  </Text>
                 </View>
               ) : null}
             </ScrollView>
@@ -2149,7 +2162,9 @@ function ProgressPage({ units }: { units: SavedLearningUnit[] }) {
         <View style={styles.progressText}>
           <Text style={styles.progressTitle}>未掌握</Text>
           <Text style={styles.progressSubtitle}>
-            {unmasteredCount ? `有 ${unmasteredCount} 句还需要练习` : "暂时没有未掌握句子"}
+            {unmasteredCount
+              ? `有 ${unmasteredCount} 句还需要练习`
+              : "暂时没有未掌握句子"}
           </Text>
         </View>
         <Text style={styles.progressCount}>{unmasteredCount}</Text>
@@ -2244,18 +2259,16 @@ export function RecordSentenceListView({
               unitTitle={unit.title}
               sentence={sentence}
               actionIcon={status === "UNMASTERED" ? "checkmark" : "close"}
-              actionColor={
-                status === "UNMASTERED" ? COLORS.green : COLORS.red
-              }
-              onAction={() =>
-                onChangeStatus(unit.id, sentence, nextStatus)
-              }
+              actionColor={status === "UNMASTERED" ? COLORS.green : COLORS.red}
+              onAction={() => onChangeStatus(unit.id, sentence, nextStatus)}
             />
           ))
         ) : (
           <RecordEmpty
             icon={status === "UNMASTERED" ? "sparkles" : "checkmark-done"}
-            title={status === "UNMASTERED" ? "没有待练句子" : "还没有已掌握句子"}
+            title={
+              status === "UNMASTERED" ? "没有待练句子" : "还没有已掌握句子"
+            }
             subtitle="完成检验后，句子会自动出现在这里"
           />
         )}
@@ -2333,9 +2346,7 @@ export function FavoriteUnitsView({
               style={({ pressed }) => [
                 styles.unitCard,
                 styles.favoriteUnitCard,
-                index % 2 === 0
-                  ? styles.unitCardLeft
-                  : styles.unitCardRight,
+                index % 2 === 0 ? styles.unitCardLeft : styles.unitCardRight,
                 { backgroundColor: cardColors[index % cardColors.length] },
                 pressed && styles.pressed,
               ]}
@@ -2432,9 +2443,8 @@ function AccountPage({ onOpenGuide }: { onOpenGuide: () => void }) {
     }
     setIsSyncing(true);
     try {
-      const { syncLearningDataToCloud } = await import(
-        "../src/data/cloud-sync"
-      );
+      const { syncLearningDataToCloud } =
+        await import("../src/data/cloud-sync");
       const result = await syncLearningDataToCloud(auth.user.id);
       const summary = result.unitCount
         ? `已备份 ${result.unitCount} 个单元、${result.sentenceCount} 句`
@@ -2544,7 +2554,12 @@ function AboutSheet({
   onClose: () => void;
 }) {
   return (
-    <Modal transparent visible={visible} animationType="slide" onRequestClose={onClose}>
+    <Modal
+      transparent
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
       <View style={styles.dictionaryBackdrop}>
         <Pressable style={styles.dictionaryDismissArea} onPress={onClose} />
         <View style={styles.aboutSheet}>
@@ -2558,9 +2573,14 @@ function AboutSheet({
             <Text style={styles.aboutSectionTitle}>Say It</Text>
             <Text style={styles.aboutText}>让你把想说的话，练成自然英语。</Text>
             <Text style={styles.aboutSectionTitle}>我们如何使用数据</Text>
-            <Text style={styles.aboutText}>你主动录制的中文音频会发送给语音与 AI 服务，用于转写、生成自然英语和英语发音。登录后，学习单元、句子状态和生成音频会同步到你的个人账号。</Text>
+            <Text style={styles.aboutText}>
+              你主动录制的中文音频会发送给语音与 AI
+              服务，用于转写、生成自然英语和英语发音。登录后，学习单元、句子状态和生成音频会同步到你的个人账号。
+            </Text>
             <Text style={styles.aboutSectionTitle}>删除与控制</Text>
-            <Text style={styles.aboutText}>游客内容仅保存在当前手机。登录后，删除学习单元会同时删除该账号的云端学习文本和生成音频。你可以随时退出登录。</Text>
+            <Text style={styles.aboutText}>
+              游客内容仅保存在当前手机。登录后，删除学习单元会同时删除该账号的云端学习文本和生成音频。你可以随时退出登录。
+            </Text>
           </ScrollView>
         </View>
       </View>
@@ -2583,8 +2603,17 @@ function AuthSheet({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submit = async () => {
-    if (!email.trim() || !password) {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail || !password) {
       Alert.alert("请填写邮箱和密码");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      Alert.alert("邮箱格式不正确", "请检查后重新填写。");
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert("密码至少需要 6 位");
       return;
     }
     if (isRegistering && !displayName.trim()) {
@@ -2600,7 +2629,10 @@ function AuthSheet({
           password,
         );
         if (needsEmailConfirmation) {
-          Alert.alert("请验证邮箱", "验证邮件已发送，请点击邮件中的链接完成注册。");
+          Alert.alert(
+            "请验证邮箱",
+            "验证邮件已发送，请点击邮件中的链接完成注册。",
+          );
         }
       } else {
         await auth.signIn(email, password);
@@ -2658,7 +2690,10 @@ function AuthSheet({
             onChangeText={setEmail}
             placeholder="邮箱"
             placeholderTextColor="#A7A096"
-            style={[styles.authInput, isRegistering && styles.authInputFollowing]}
+            style={[
+              styles.authInput,
+              isRegistering && styles.authInputFollowing,
+            ]}
             autoCapitalize="none"
             autoCorrect={false}
             keyboardType="email-address"
@@ -2795,7 +2830,12 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     letterSpacing: -1.5,
   },
-  heroSubtitle: { marginTop: 15, color: COLORS.muted, fontSize: 15, fontWeight: "600" },
+  heroSubtitle: {
+    marginTop: 15,
+    color: COLORS.muted,
+    fontSize: 15,
+    fontWeight: "600",
+  },
   recordButtonOuter: {
     width: 148,
     height: 148,
@@ -3460,7 +3500,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.coralSoft,
   },
   dictionaryNoteLabel: { color: COLORS.coral, fontSize: 12, fontWeight: "900" },
-  dictionaryNoteText: { marginTop: 7, color: COLORS.ink, fontSize: 15, lineHeight: 23 },
+  dictionaryNoteText: {
+    marginTop: 7,
+    color: COLORS.ink,
+    fontSize: 15,
+    lineHeight: 23,
+  },
   dictionaryExample: {
     marginTop: 15,
     padding: 16,

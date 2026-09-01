@@ -1,4 +1,11 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { RequestRateLimitGuard } from '../common/request-rate-limit.guard';
 import { GenerationsService } from './generations.service';
 
 interface GenerationRequest {
@@ -6,6 +13,7 @@ interface GenerationRequest {
 }
 
 @Controller('generations')
+@UseGuards(RequestRateLimitGuard)
 export class GenerationsController {
   constructor(private readonly generationsService: GenerationsService) {}
 

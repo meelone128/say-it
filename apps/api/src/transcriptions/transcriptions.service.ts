@@ -4,6 +4,10 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { extname } from 'node:path';
+import {
+  fetchProviderWithRetry,
+  ProviderRateLimitError,
+} from '../common/provider-retry';
 
 export interface AudioUpload {
   buffer: Buffer;
@@ -41,7 +45,7 @@ export class TranscriptionsService {
 
     let response: Response;
     try {
-      response = await fetch(endpoint, {
+      response = await fetchProviderWithRetry(endpoint, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${apiKey}`,
@@ -67,7 +71,12 @@ export class TranscriptionsService {
         }),
         signal: AbortSignal.timeout(90_000),
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof ProviderRateLimitError) {
+        throw new ServiceUnavailableException(
+          '中文转写服务当前较忙，已自动重试。请等待几秒后再试。',
+        );
+      }
       throw new BadGatewayException('暂时无法连接语音识别服务，请稍后重试');
     }
 
